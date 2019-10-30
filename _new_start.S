@@ -3,10 +3,6 @@
 #ifndef __x86_64__
   NSX_REPORT_UNSUPORTED_PLATEFORM
 #endif
-//.section .bss
-//  .lcomm tls_buffer,4096
- 
-
 .section .text
 .global _start
 .type _start,@function
@@ -17,10 +13,10 @@ _start:
 /*nullify rbp as required by doc*/
     xorq %rbp, %rbp
 /*set fs:*/
-    //movq $__NR_arch_prctl, %rax
-    //movq $ARCH_SET_FS, %rdi
-    //movq $tls_buffer, %rsi
-    //syscall 
+//    movq $__NR_arch_prctl, %rax
+//    movq $ARCH_SET_FS, %rdi
+//    movq $tls_buffer, %rsi
+//    syscall 
 /*move argc to rax*/
     popq %rax
 /*end set rax to diff (argv.end-argv.begin)*/
@@ -58,12 +54,11 @@ _start:
 /*push rsp to the stack*/
   pushq %rax /*add trash to keep alignment*/
   pushq %rsp /*when pushed rsp*/
-  callq execution_start 
+  callq execution_start
 /*call _exit at return*/
   movq %rax,%rdi
   movq $60, %rax
   syscall
-  hlt
   .cfi_endproc
 
 /*.local _write_nsx
