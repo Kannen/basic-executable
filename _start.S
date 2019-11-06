@@ -1,12 +1,3 @@
-#include <asm/prctl.h>
-#include <asm/unistd_64.h>
-#ifndef __x86_64__
-  NSX_REPORT_UNSUPORTED_PLATEFORM
-#endif
-//.section .bss
-//  .lcomm tls_buffer,4096
- 
-
 .section .text
 .global _start
 .type _start,@function
@@ -59,23 +50,5 @@ _start:
   pushq %rax /*add trash to keep alignment*/
   pushq %rsp /*when pushed rsp*/
   callq execution_start 
-/*call _exit at return*/
-  movq %rax,%rdi
-  movq $60, %rax
-  syscall
   hlt
   .cfi_endproc
-
-/*.local _write_nsx
-.type _write_nsx,@function
-.align 16
-_write_nsx:
-  .cfi_startproc
-  movq $__NR_write, %rax
-  syscall
-  ret
-  .cfi_endproc
-
-.global write_nsx
-.type write_nsx,@function
-.set write_nsx,_write_nsx*/
