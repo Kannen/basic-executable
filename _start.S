@@ -1,3 +1,12 @@
+//documentation of the state at procedure start:
+// -System V Application Binary Interface 
+//    AMD64 Architecture Processor Supplement 
+//      §3.4 Process Initialization
+//_start is ld default entry point
+//Documentation for function calling convention
+// -System V Application Binary Interface 
+//    AMD64 Architecture Processor Supplement  / and i386 
+//      §3.2 Function calling sequence 
 .section .text
 .global _start
 .type _start,@function
@@ -6,49 +15,17 @@ _start:
     .cfi_startproc
     .cfi_undefined rip
 /*nullify rbp as required by doc*/
+//at function intry rbp is pushed on the stack, it indicates caller base frame address
     xorq %rbp, %rbp
-/*set fs:*/
-    //movq $__NR_arch_prctl, %rax
-    //movq $ARCH_SET_FS, %rdi
-    //movq $tls_buffer, %rsi
-    //syscall 
-/*move argc to rax*/
-    popq %rax
-/*end set rax to diff (argv.end-argv.begin)*/
-    sal $3, %rax
-/*set argv*/
-    movq %rsp, %rdi
+/*register function in rdx...*/
+    //movq %rdx, %r10 
+    //=>rdx is a pointer to near the top none executable memory...
+    //=>probably linux does not respect System V Application Binary Interface
+/*move argc to the first arg*/
+    movq (%rsp),%rdi
+/*move *argv start at %8(rsp) */
     movq %rsp, %rsi
-    addq %rax, %rsi
-/*set envp*/
-    movq %rsi, %rdx
-    addq $8, %rdx /*a null long between argv end envp*/
-    movq %rdx, %rcx
-/*look for end pointer*/
-    cmpq $0, (%rcx)
-    je .L_start_elf_entry_built_envp
-.L_start_elf_entry_increase_end_envp:
-    addq $8, %rcx
-    cmpq $0, (%rcx)
-    jne .L_start_elf_entry_increase_end_envp
-.L_start_elf_entry_built_envp:
-/*set auxvt*/
-    movq %rcx, %r8
-    addq $8, %r8  /*a null long between envp and auxvt*/
-    movq %r8, %r9
-/*look for null pointer*/
-    cmpq $0, (%r9)
-    je .L_start_elf_entry_built_auxvt
-.L_start_elf_entry_increase_end_auxvt:
-    addq $8, %r9
-    cmpq $0, (%r9)
-    jne .L_start_elf_entry_increase_end_auxvt
-.L_start_elf_entry_built_auxvt:
-/*align stack*/
-  and $~15, %rsp
-/*push rsp to the stack*/
-  pushq %rax /*add trash to keep alignment*/
-  pushq %rsp /*when pushed rsp*/
-  callq execution_start 
-  hlt
-  .cfi_endproc
+    addq $8,%rsi
+    callq execution_start//rsp is already well aligned 
+    hlt//in case execution_start would return (illegal instruction in user mode)
+    .cfi_endproc
