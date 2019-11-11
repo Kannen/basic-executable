@@ -26,6 +26,6 @@ _start:
 /*move *argv start at %8(rsp) */
     movq %rsp, %rsi
     addq $8,%rsi
-    callq execution_start//rsp is already well aligned 
+    callq _Z5startiPPc//rsp is already well aligned 
     hlt//in case execution_start would return (illegal instruction in user mode)
     .cfi_endproc

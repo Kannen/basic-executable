@@ -29,16 +29,40 @@ inline void execute_fini_array(){
   auto end = __fini_array_end;
   for(;beg!=end;++beg) (*beg)();
   }
-
+enum class auxilary_entry_type:unsigned long{
+   end_of_vector = AT_NULL,
+   to_ignore = AT_IGNORE,
+   program_file_descriptor = AT_EXECFD,
+   program_headers_begin = AT_PHDR,
+   program_header_entry_size = AT_PHENT,
+   program_headers_count = AT_PHNUM,
+   page_size = AT_PAGESZ,
+   interpreter_base_address = AT_BASE,
+   _unused_flags = AT_FLAGS,
+   program_entry_point = AT_ENTRY,
+   not_an_elf_program = AT_NOTELF,
+   real_user_id = AT_UID,
+   effective_user_id = AT_EUID,
+   real_group_id = AT_GID,
+   effective_group_id = AT_EGID,
+   plateform_name = AT_PLATFORM,
+   hardware_capability = AT_HWCAP,
+   clock_frequency = AT_CLKTCK,
+   is_setuid_like = AT_SECURE,
+   real_plateform_name = AT_BASE_PLATFORM,
+   random_bytes_address = AT_RANDOM,
+   hardware_capability2 = AT_HWCAP2,
+   program_file_name = AT_EXECFN,
+   vdso_ehdr = AT_SYSINFO_EHDR
+   };
 struct auxv_t{
-  size_t a_type;
+  auxilary_entry_type type;
   union{
-    long a_val;
-    void* a_ptr;
-    void (*a_fnc)();
+    long value;
+    void* pointer;
+    void (*function)();
     };
   };
-
 struct envp_sentinel_t{
   friend bool operator==(char** envp,envp_sentinel_t){
     return *envp==nullptr;
@@ -61,16 +85,16 @@ get_envp(char ** argv_end){//ie argv+argc
 
 struct auxv_t_sentinel_t{
   friend bool operator==(auxv_t* aux,auxv_t_sentinel_t){
-    return aux->a_type==AT_NULL;
+    return aux->type==auxilary_entry_type::end_of_vector;
     }
   friend bool operator==(auxv_t_sentinel_t,auxv_t* aux){
-    return aux->a_type==AT_NULL;
+    return aux->type==auxilary_entry_type::end_of_vector;
     }
   friend bool operator!=(auxv_t* aux,auxv_t_sentinel_t){
-    return aux->a_type!=AT_NULL;
+    return aux->type!=auxilary_entry_type::end_of_vector;
     }
   friend bool operator!=(auxv_t_sentinel_t,auxv_t* aux){
-    return aux->a_type!=AT_NULL;
+    return aux->type!=auxilary_entry_type::end_of_vector;
     }
   };
 inline constexpr auto auxv_t_sentinel = auxv_t_sentinel_t{};
@@ -81,10 +105,4 @@ get_auxv_t(char ** envp_end){//envp_end==envp_sentinel
   }
 }
 
-extern "C"
-[[noreturn]] void execution_start [[gnu::used]]
-  (int argc,char* argv[]);
- //(char** argv_beg,char** argv_end
- //,char** envp_beg,char** envp_end
- //,sys::auxv_t* auxv_beg,sys::auxv_t* auxv_end
- //,void(*atexit_rdx_function)(void));
+[[noreturn]] void start (int argc,char* argv[]);

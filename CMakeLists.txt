@@ -4,16 +4,16 @@ project(basic-executable VERSION 0.1
              DESCRIPTION "minimum to make an executable without stdandard libraries"
              LANGUAGES CXX ASM)
 
-add_library(execution-start STATIC _start.S)
+add_library(start STATIC _start.S)
 
-  target_compile_options(execution-start 
+  target_compile_options(start 
 	  PUBLIC -fpie -fno-stack-protector)
-  target_link_options(execution-start INTERFACE -static-pie -nostartfiles)
-  target_include_directories(execution-start 
+  target_link_options(start INTERFACE -static-pie -nostartfiles)
+  target_include_directories(start 
 	  INTERFACE $<INSTALL_INTERFACE:include> $<BUILD_INTERFACE:"">)
 
-  install(TARGETS execution-start EXPORT basic-executable-target)
-  install(FILES execution-start.hpp
+  install(TARGETS start EXPORT basic-executable-target)
+  install(FILES start.hpp
   	TYPE INCLUDE) 
 
 add_library(gcc-expected STATIC stdlib_replacement.cpp)
