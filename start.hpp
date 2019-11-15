@@ -2,6 +2,4 @@
 //c++ _start.S -static -fno-exceptions -fno-rtti -nostdlib -fno-threadsafe-statics
 #pragma once
 
-extern "C" [[noreturn]] void _start();
-
 [[noreturn]] void start (void* entry_stack_pointer,void(*finalizing_function)());
