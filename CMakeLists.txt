@@ -7,8 +7,11 @@ project(basic-executable VERSION 0.1
 add_library(start STATIC _start.S)
 
   target_compile_options(start 
-	  PUBLIC -fpie -fno-stack-protector)
-  target_link_options(start INTERFACE -static-pie -nostartfiles)
+	  PUBLIC -fno-stack-protector -fno-exceptions -fno-rtti
+	  -fno-asynchronous-unwind-tables
+	  -fno-unwind-tables -fshort-enums -static)
+  target_link_options(start INTERFACE -nostartfiles
+	  PUBLIC -static -Wl,--no-eh-frame-hdr,--no-ld-generated-unwind-info)
   target_include_directories(start 
 	  INTERFACE $<INSTALL_INTERFACE:include> $<BUILD_INTERFACE:"">)
 
@@ -17,8 +20,10 @@ add_library(start STATIC _start.S)
   	TYPE INCLUDE) 
 
 add_library(gcc-expected STATIC stdlib_replacement.cpp)
-  target_compile_options(gcc-expected INTERFACE
+target_compile_options(gcc-expected PUBLIC
   	-fno-exceptions -fno-rtti -fno-threadsafe-statics -fno-stack-protector
+	-ffreestanding -fno-asynchronous-unwind-tables
+	-fno-unwind-tables -fshort-enums
 	PRIVATE -std=c++17)
   target_link_options(gcc-expected INTERFACE -nodefaultlibs)
   install(TARGETS gcc-expected EXPORT basic-executable-target)

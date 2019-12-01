@@ -12,8 +12,8 @@
 .type _start,@function
 .align 16
 _start:
-    .cfi_startproc
-    .cfi_undefined rip
+    //.cfi_startproc
+    //.cfi_undefined rip
     //
     //rbp already cleared by linux (see ELF_PLAT_INIT definition in arch/x86/include/asm/elf.c, used in fs/binfmt_elf.c)
     //
@@ -32,4 +32,4 @@ _start:
     movq %rsp,%rdi
     callq _Z5startPvPFvvE//rsp is already well aligned 
     hlt//in case execution_start would return (illegal instruction in user mode)
-    .cfi_endproc
+    //.cfi_endproc
