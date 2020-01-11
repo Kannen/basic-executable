@@ -1,7 +1,10 @@
 /// @file
 /// Provides tuple similar to standard library
 #pragma once
-#include <c++support.hpp>
+
+#include <fcpp/c++support.hpp>
+#include <fcpp/types.hpp>
+#include <fcpp/utility.hpp>
 
 #pragma GCC diagnostic push;
 #pragma GCC diagnostic ignored "-Wmissing-braces"
@@ -10,15 +13,31 @@ namespace std{
 
 #pragma GCC diagnostic push  
 #pragma GCC diagnostic ignored "-Wpadded"
+namespace _impl{
+	template <class T, class...Args>
+	struct tuple_elems
+		{
+
+		[[no_unique_address]] T first;
+		
+		[[no_unique_address]] tuple<Args...> others;
+
+		};
+
+	template <class T>
+	struct tuple_elems<T>
+		{
+
+		[[no_unique_address]] T first;
+
+		};
+	};
+	
 
 template <class T, class...Args>
 struct tuple <T, Args...>
+	_impl::tuple_elems <T, Args...>
 	{
-	
-	
-	[[no_unique_address]] T first;
-	
-	[[no_unique_address]] tuple<Args...> others;
 	
 	static constexpr size_t size = sizeof...(Args)+1;
 	

@@ -1,5 +1,6 @@
 #pragma once
-#include <c++support.hpp>
+
+#include <fcpp/utility.hpp>
 //	This header file provides 2 macros: `Assert` and `Assert_heavy` and the declaration of
 //	a function that the user must implement: `std::dynamic_assertion_failure`
 //
