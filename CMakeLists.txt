@@ -125,8 +125,8 @@ add_library(fcpp STATIC cstring.cpp gcc-required.cpp)
 	-Wl,--no-eh-frame-hdr,--no-ld-generated-unwind-info
 	)
   install(TARGETS fcpp EXPORT fcpp-target)
-  install(DIRECTORY fcpp TYPE INCLUDE)
-  install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/fcpp TYPE INCLUDE)
+  install(DIRECTORY fcpp TYPE INCLUDE REGEX ".*.sw" EXCLUDE)
+  install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/fcpp TYPE INCLUDE REGEX ".*.sw" EXCLUDE)
 
 
 #Installation
