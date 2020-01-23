@@ -31,12 +31,12 @@ namespace _impl{
 		[[no_unique_address]] T first;
 
 		};
-	};
+	}
 	
 
 template <class T, class...Args>
 struct tuple <T, Args...>
-	_impl::tuple_elems <T, Args...>
+	: _impl::tuple_elems <T, Args...>
 	{
 	
 	static constexpr size_t size = sizeof...(Args)+1;

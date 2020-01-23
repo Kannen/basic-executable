@@ -116,28 +116,5 @@ namespace std{
 	  return ret_t{val,0};
 	  }
 
-	//TODO rien à faire ici:
-	inline long get_processor_timestamp(){
-	  register long low asm("rax");
-	  register long high asm("rdx");
-	  asm volatile(
-	    "rdtsc\n\t"
-	    :"=r"(low),"=r"(high)
-	    );
-	  return (high<<32) | low;
-	  }
-	inline long get_processor_timestamp_with_fence(){
-	  //see How to Benchmark Code execution Time on IA32 and IA64 instruction set architecture  
-	  register long low asm("rax");
-	  register long high asm("rdx");
-	  asm volatile(
-	    "lfence\n\t"//serializing instruction. Shall it be mfence on AMD - see S.O.???
-	    "rdtsc\n\t"
-	    :"=r"(low),"=r"(high)
-	    :
-	    :"memory"//prevent compiler reordering/optimization of memory accesses
-	    );
-	  return (high<<32) | low;
-	  }
 	}
 

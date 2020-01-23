@@ -2,18 +2,23 @@
 #include <fcpp/c++support.hpp>
 #include <fcpp/types.hpp>
 #include <fcpp/array.hpp>
+#include <fcpp/tuple.hpp>
 
 
 namespace std
 	{
 
+	template <class T, class Ind_t>
+	concept visitable_with_index = requires (const T& cv)
+		{
+		get <Ind_t{}> (cv);
+		};
 
 	template <class T>
 	concept visitable = requires (const T& cv)
 	        {
 		{remove_reference_t <T> :: size} -> convertible_to <size_t>;
-		get <0> (cv);
-		{index (cv)} -> convertible_to <size_t>;
+		requires visitable_with_index <T, decltype(index(cv))>;
 		};
 
 
@@ -81,6 +86,9 @@ namespace std
 			using return_type = by_i <make_index_sequence <N>> :: template return_type<F, Js...>;
 	
 			};
+
+		template <class T>
+		using index_type = decltype(index(declval<T>()));
 	
 	
 		template<class R, class F, class...Abstracts>
@@ -95,7 +103,7 @@ namespace std
 			template<size_t...Is>
 			static constexpr R
 			specialization(F f, Abstracts...args){
-				return forward <F> (f) (get<Is>(args)...);
+				return forward <F> (f) (get <static_cast <index_type <Abstracts>> (Is)> (args)...);
 			  	}
 
 			};
@@ -104,7 +112,8 @@ namespace std
 		struct vis_get_ret{
 
 			template<size_t...Is>
-			using return_type = decltype(declval<F>() (get<Is>(declval<Abstracts>())...));
+			using return_type = decltype(declval<F>() (get <static_cast <index_type <Abstracts>> (Is)> 
+							(declval<Abstracts>())...));
 			
 			};
 
@@ -119,7 +128,7 @@ namespace std
 		template <class T, class Arg>
 		[[gnu::always_inline]] constexpr auto
 		index_vis_tbl(const T& vtbl, const Arg& arg){
-			return vtbl[index(arg)];	
+			return vtbl [static_cast <size_t> (index(arg))];	
 			}
 
 		template <class T, class Arg, class...Args>
