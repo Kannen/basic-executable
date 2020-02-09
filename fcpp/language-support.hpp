@@ -35,6 +35,13 @@ operator delete[] (void* ptr,void*) noexcept
 namespace std
 	{
 
+	struct nothrow_t
+		{
+		explicit nothrow_t() = default;
+		};
+	inline constexpr auto nothrow = nothrow_t{};
+
+
 	template <size_t Align, class T>
 	[[nodiscard, gnu::always_inline]]
 	constexpr auto

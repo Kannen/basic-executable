@@ -6,7 +6,7 @@
 #undef __GLIBC__
 
 namespace std{
-	template <class...Arg, class...Args>
+	template <class Arg, class...Args>
 	consteval auto
 	max_of(Arg&& arg, Args&&...args)
 		{

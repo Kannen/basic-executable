@@ -1,6 +1,6 @@
 #pragma once
 
-#include <fcpp/c++support.hpp>
+#include <fcpp/language-support.hpp>
 #include <fcpp/types.hpp>
 #include <fcpp/assertion.hpp>
 

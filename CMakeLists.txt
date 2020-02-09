@@ -117,6 +117,7 @@ add_library(fcpp STATIC cstring.cpp gcc-required.cpp)
 
 	-Wno-unused-parameter
         -Wno-parentheses
+	-Wno-missing-field-initializers
 	)
 
   target_link_options(fcpp PUBLIC 

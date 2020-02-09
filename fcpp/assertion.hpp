@@ -58,7 +58,7 @@
 #if ASSERTION_LEVEL == 2
 
 #	define Assert(expr,...) \
-		({\
+		do{\
  		const bool _fcpp_assert_eval = static_cast<bool>(expr);\
 	    __VA_OPT__(		if (__builtin_constant_p((__VA_ARGS__)) && !__builtin_constant_p(_fcpp_assert_eval)){\
 				extern void constant_evaluation_broken [[gnu::error("assertion evaluation break constant evaluation.")]]();\
@@ -71,17 +71,16 @@
 				}\
 			::std::dynamic_assertion_failure (#expr, __FILE__, __LINE__);\
 			}\
-		})
+		}while(false)
 
 #	define Assert_heavy(expr,...) Assert(expr __VA_OPT__(,) __VA_ARGS__)
 
 #elif ASSERTION_LEVEL == 1
 
 #   define Assert(expr,...) \
-		({\
-		::std::_impl::check_light_weight_assertion ([&] (auto&&...args) {return static_cast<bool>(expr);} __VA_OPT__(,) __VA_ARGS__);\
-		if (!(expr)) __builtin_unreachable();\
-		})
+		do{\
+		if (::std::_impl::eval_light_weight_assertion ([&] {return !static_cast<bool>(expr);})) __builtin_unreachable();\
+		}while(false)
 
 #   define Assert_heavy(expr,...) static_cast<int>(0)
 
@@ -111,11 +110,11 @@ namespace std
 namespace std::_impl
 	{
 
-	template <class T, class...Args>
-	[[using gnu: noinline, error("assertion generates code.")]] constexpr void
-	check_light_weight_assertion (T&& expr,Args&&...args)
+	template <class T>
+	[[using gnu: noinline, error("assertion generates code: condition evaluation certainly has side-effects.")]] constexpr bool
+	eval_light_weight_assertion (T&& expr)
 		{
-		expr(forward<Args>(args)...);
+		return expr();
 		}
 	
 	}

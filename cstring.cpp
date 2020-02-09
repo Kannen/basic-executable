@@ -3,7 +3,7 @@
 
 //some memcpy familly defined in gcc-required.cpp
 //
-#include <fcpp/c++support.hpp>
+#include <fcpp/language-support.hpp>
 #include <fcpp/types.hpp>
 
 extern "C"{
