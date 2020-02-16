@@ -60,39 +60,16 @@ set(VIMRC_INCLUDE_DIRS  ${CMAKE_CURRENT_LIST_DIR}
 
 configure_file(vimrc.inc ${PROJECT_BINARY_DIR}/vimrc @ONLY)
 
-add_library(fcpp STATIC cstring.cpp gcc-required.cpp)
+add_library(fcpp INTERFACE)
   target_include_directories(fcpp 
 
-	  PUBLIC $<INSTALL_INTERFACE:include>
+	  INTERFACE $<INSTALL_INTERFACE:include>
 	         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>
 
-	  PUBLIC $<INSTALL_INTERFACE:include/fcpp/to-sys/g++>
-	  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/fcpp/to-sys/g++>
-
-	  PUBLIC $<INSTALL_INTERFACE:include/fcpp/to-sys/g++x86>
-	  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/fcpp/to-sys/g++x86>
-
-	  PUBLIC $<INSTALL_INTERFACE:include/fcpp/to-sys/gcc>
-	  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/fcpp/to-sys/gcc>
-
-	  PUBLIC $<INSTALL_INTERFACE:include/fcpp/to-sys>
-	         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/fcpp/to-sys>
-
-
 	  )
-  target_compile_options(fcpp PUBLIC
-    	-fno-exceptions 
-	-fno-rtti 
-	-fno-threadsafe-statics 
-	-fno-stack-protector
-  	-fno-unwind-tables 
-	-fno-asynchronous-unwind-tables
+  target_compile_options(fcpp INTERFACE
 	-fshort-enums 
 
-  	-ffreestanding 
-	-static
-  	-nostdinc
-  	-nostdinc++
   	-fno-operator-names
 
 	-std=c++2a
@@ -120,12 +97,48 @@ add_library(fcpp STATIC cstring.cpp gcc-required.cpp)
 	-Wno-missing-field-initializers
 	)
 
-  target_link_options(fcpp PUBLIC 
+add_library(free-cpp STATIC cstring.cpp gcc-required.cpp)
+  target_link_libraries(free-cpp PUBLIC fcpp)
+  target_include_directories(free-cpp 
+
+	  PUBLIC $<INSTALL_INTERFACE:include>
+	         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>
+
+	  PUBLIC $<INSTALL_INTERFACE:include/fcpp/to-sys/g++>
+	  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/fcpp/to-sys/g++>
+
+	  PUBLIC $<INSTALL_INTERFACE:include/fcpp/to-sys/g++x86>
+	  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/fcpp/to-sys/g++x86>
+
+	  PUBLIC $<INSTALL_INTERFACE:include/fcpp/to-sys/gcc>
+	  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/fcpp/to-sys/gcc>
+
+	  PUBLIC $<INSTALL_INTERFACE:include/fcpp/to-sys>
+	         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/fcpp/to-sys>
+
+
+	  )
+  target_compile_options(free-cpp PUBLIC
+    	-fno-exceptions 
+	-fno-rtti 
+	-fno-threadsafe-statics 
+	-fno-stack-protector
+  	-fno-unwind-tables 
+	-fno-asynchronous-unwind-tables
+
+  	-ffreestanding 
+	-static
+  	-nostdinc
+  	-nostdinc++
+	)
+  target_link_options(free-cpp PUBLIC 
 	-nostdlib
 	-static 
 	-Wl,--no-eh-frame-hdr,--no-ld-generated-unwind-info
 	)
-  install(TARGETS fcpp EXPORT fcpp-target)
+
+  install(TARGETS fcpp free-cpp EXPORT fcpp-target)
+
   install(DIRECTORY fcpp TYPE INCLUDE REGEX ".*.sw" EXCLUDE)
   install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/fcpp TYPE INCLUDE REGEX ".*.sw" EXCLUDE)
 
