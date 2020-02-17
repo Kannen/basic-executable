@@ -4,6 +4,7 @@
 #include <utility> //tuple_element tupe_size
 #include <version>
 #include <compare>
+#include <limits>
 
 #include <bit> //for is_pow2 //for bit_cast when it will be implemented
 
