@@ -10,6 +10,11 @@
 
 #undef __GLIBC__
 
+#ifndef  FREE_CPP_FREESTANDING
+#	include <new>
+#	include <memory>
+#	include <tuple>
+#else
 
 [[nodiscard]] inline auto
 operator new (std::size_t size,void* ptr) noexcept
@@ -32,7 +37,6 @@ inline void
 operator delete[] (void* ptr,void*) noexcept
     {}
 
-
 namespace std
 	{
 
@@ -42,24 +46,12 @@ namespace std
 		};
 	inline constexpr auto nothrow = nothrow_t{};
 
-
-	template <size_t Align, class T>
-	[[nodiscard, gnu::always_inline]]
-	constexpr auto
-	assume_aligned(T* ptr)
-		{
-		static_assert(ispow2(Align));
-		return static_cast<T*>(__builtin_assume_aligned(ptr,Align));
-		}
-	
-	
 	struct destroying_delete_t 
 	    {
 	    explicit destroying_delete_t() = default;
 	    };
 	
 	inline constexpr destroying_delete_t destroying_delete{};
-	
 	
 	template <class T>
 	[[nodiscard]] constexpr auto
@@ -82,9 +74,20 @@ namespace std
 	
 	void 
 	launder (const volatile void *) = delete;
+
 	
-	
+
+	template <size_t Align, class T>
+	[[nodiscard, gnu::always_inline]]
+	constexpr auto
+	assume_aligned(T* ptr)
+		{
+		static_assert(ispow2(Align));
+		return static_cast<T*>(__builtin_assume_aligned(ptr,Align));
+		}
+
 	template<class T>
 	inline constexpr size_t tuple_size_v = tuple_size<T>::value;
 
     	}
+#endif

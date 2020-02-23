@@ -3,8 +3,8 @@
 
 //some memcpy familly defined in gcc-required.cpp
 //
-#include <fcpp/language-support.hpp>
-#include <fcpp/types.hpp>
+#include <fcpp/cstring.hpp>
+
 
 extern "C"{
 

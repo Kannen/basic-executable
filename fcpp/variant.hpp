@@ -5,6 +5,10 @@
 #include <fcpp/tuple.hpp>
 #include <fcpp/assertion.hpp>
 
+#ifndef  FREE_CPP_FREESTANDING
+#	include <variant>
+#else
+
 namespace std
 {
 
@@ -310,4 +314,4 @@ struct variant
 
 
 }
-
+#endif

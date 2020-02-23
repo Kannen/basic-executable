@@ -118,6 +118,7 @@ add_library(free-cpp STATIC cstring.cpp gcc-required.cpp)
 
 
 	  )
+  target_compile_definitions(free-cpp PUBLIC FREE_CPP_FREESTANDING)
   target_compile_options(free-cpp PUBLIC
     	-fno-exceptions 
 	-fno-rtti 

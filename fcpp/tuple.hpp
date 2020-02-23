@@ -6,6 +6,10 @@
 #include <fcpp/types.hpp>
 #include <fcpp/utility.hpp>
 
+#ifndef  FREE_CPP_FREESTANDING
+#	include <tuple>
+#else
+
 #pragma GCC diagnostic push;
 #pragma GCC diagnostic ignored "-Wmissing-braces"
 
@@ -272,3 +276,5 @@ struct tuple_element <0, tuple<A, Args...>>
 }
 
 #pragma GCC diagnostic pop
+
+#endif

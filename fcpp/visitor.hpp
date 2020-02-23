@@ -26,6 +26,7 @@ namespace std
 	struct do_not_visit 
 		: tuple<Arg>
 		{
+		inline static constexpr ssize_t size = 1;
 		friend constexpr auto
 		index(const do_not_visit&) -> ssize_t
 			{ return 0; }

@@ -4,6 +4,11 @@
 #include <fcpp/types.hpp>
 #include <fcpp/assertion.hpp>
 
+#ifndef  FREE_CPP_FREESTANDING
+	#include <array>
+
+#else
+
 
 namespace std{
 
@@ -103,8 +108,6 @@ struct tuple_element <I, array<T,N>> : type_identity<T> {};
 
 
 
-/// @}
-
-
 }
+#endif
 

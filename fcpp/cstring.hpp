@@ -1,5 +1,9 @@
 #pragma once
 #include <fcpp/types.hpp>
+
+#ifndef  FREE_CPP_FREESTANDING
+#	include <cstring>
+#else
 //definitions in cstring.cpp and gcc-required.cpp
 //
 namespace std
@@ -49,3 +53,5 @@ namespace std
 		}
 
 	}
+
+#endif

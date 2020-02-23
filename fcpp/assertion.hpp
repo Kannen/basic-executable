@@ -1,6 +1,5 @@
 #pragma once
 
-#include <fcpp/utility.hpp>
 //	This header file provides 2 macros: `Assert` and `Assert_heavy` and the declaration of
 //	a function that the user must implement: `std::dynamic_assertion_failure`
 //
@@ -75,6 +74,9 @@
 
 #	define Assert_heavy(expr,...) Assert(expr __VA_OPT__(,) __VA_ARGS__)
 
+#	define Assert_unreachable() \
+			::std::dynamic_assertion_failure (#expr, __FILE__, __LINE__)
+
 #elif ASSERTION_LEVEL == 1
 
 #   define Assert(expr,...) \
@@ -84,11 +86,16 @@
 
 #   define Assert_heavy(expr,...) static_cast<int>(0)
 
+#   define Assert_unreachable() \
+		 	__builtin_unreachable()	
+
 #elif ASSERTION_LEVEL == 0
 
 #   define Assert(expr,...) static_cast<int>(0)
 
 #   define Assert_heavy(expr,...) static_cast<int>(0)
+
+#   define Assert_unreachable() static_cast<int>(0)
 
 #else
 
