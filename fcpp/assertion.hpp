@@ -75,7 +75,7 @@
 #	define Assert_heavy(expr,...) Assert(expr __VA_OPT__(,) __VA_ARGS__)
 
 #	define Assert_unreachable() \
-			::std::dynamic_assertion_failure (#expr, __FILE__, __LINE__)
+			::std::dynamic_assertion_failure ("Reached unreachable assertion.", __FILE__, __LINE__)
 
 #elif ASSERTION_LEVEL == 1
 
