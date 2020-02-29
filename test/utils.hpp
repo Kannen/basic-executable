@@ -1,7 +1,6 @@
 #pragma once
-#include <kernel/file.hpp>
-#include <kernel/utils.hpp>
-#include <kernel/process.hpp>
+#include <kernel/fs.hpp>
+#include <kernel/kernel.hpp>
 #include <kernel/error_messages.hpp>
 
 template<int N>

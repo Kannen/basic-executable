@@ -3,8 +3,8 @@
 #include <fcpp/tuple.hpp>
 #include <fcpp/assertion.hpp>
 #include "utils.hpp"
-#include <kernel/file.hpp>
-#include <kernel/process.hpp>
+#include <kernel/fs.hpp>
+#include <kernel/kernel.hpp>
 #include <elf/start.hpp>
 
 struct A{};

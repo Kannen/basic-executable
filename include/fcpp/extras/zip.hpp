@@ -2,7 +2,6 @@
 #include <ranges>
 #include <iterator>
 #include <tuple>
-#include <algorithm>
 
 namespace std::ranges
 	{
