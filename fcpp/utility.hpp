@@ -8,6 +8,67 @@
 
 namespace std{
 
+namespace _impl
+	{
+
+	template <class T, ssize_t Ind, class...Args>
+	struct _type_list_get_index 
+		:integral_constant <ssize_t, -1>
+		{};
+
+	template <class T, ssize_t Ind, class E, class...Elems>
+	struct _type_list_get_index <T, Ind, E, Elems...>
+		_type_list_get_index <T, Ind+1, Elems...>
+		{};
+
+	template <class T, ssize_t Ind, class...Elems>
+	struct _type_list_get_index <T, Ind, T, Elems...>
+		{
+		static constexpr ssize_t value =   _type_list_get_index <T, 0, List <Elemens...>>::value == -1
+		                                 ? Ind
+						 : -1;
+		};
+	
+	template <class T,class...Elems>
+	using type_list_get_index = _type_list_get_index <T, 0, Elems...>;
+
+	template <size_t Index, class...Args>
+	struct _get_at_;
+
+	template <size_t Index, class Arg, class...Args>
+	struct _get_at_ <Index, Arg, Args...>
+		: _get_at_ <Index - 1, Args...>
+		{};
+
+	template <class Arg, class...Args>
+	struct _get_at_ <0, Arg, Args...>
+		{
+		using type = Arg;
+		};
+
+	}
+
+
+template <class...Args>
+struct type_list;
+	{
+
+	template <class T>
+	using index_of = enable_if_t < type_list_get_index <T, Args...>::value > 0
+	                             , type_list_get_index <T, Args...>>;
+
+	static constexpr size_t size = sizeof...(Args);
+
+	template <size_t I>
+		requires (I < size)
+	using at = _get_at_ <I, Args...>;
+
+	};
+
+
+
+
+
 template <class Derived, class From = Derived>
 struct self_interface
 	{
