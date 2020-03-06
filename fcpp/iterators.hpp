@@ -44,32 +44,51 @@
 namespace std
 {
 
-template <class Self, class DifferenceType = std::ptrdiff_t>
-class random_access_iterator_interface
+template <class T>
+struct prvalue_arrow_dereferencer
 	{
-	constexpr auto
-	self() -> Self&
-		{
-		return static_cast <Self&> (*this);
-		}
+
+	T value;
 
 	constexpr auto
-	self() const -> const Self&
+	operator -> ()
 		{
-		return static_cast <const Self&> (*this);
+		return &value;
 		}
+	};
+
+template <class Self, class DifferenceType = std::ptrdiff_t>
+class iterator_interface
+	: public self_interface <Self, iterator_interface <Self, DifferenceType>>
+	{
+	protected:
+
+	using self_interface <Self, iterator_interface <Self, DifferenceType>> :: self;
 
 	public:
 
-	using difference_type = std::ptrdiff_t;
+        auto
+	operator <=> (const iterator_interface&) const
+		-> std::strong_ordering; 
+
+
+	using difference_type = DifferenceType;
+
 
 	constexpr auto
 	operator -> () const
+		requires is_reference_v <iter_reference_t <const Self>>
 		{
-		return & *self();
+		if constexpr (is_reference_v <iter_reference_t <const Self>>)
+			return & * self ();
+		else	{
+			using ret_t = prvalue_arrow_dereferencer <iter_reference_t <const Self>>;
+			return ret_t {* self ()};
+			}
 		}
-		
-	constexpr auto	
+
+
+	constexpr Self
 	operator ++ (int)
 		{
 		auto old = self();
@@ -77,30 +96,35 @@ class random_access_iterator_interface
 		return old;
 		}
 
-	constexpr auto	
+
+	constexpr Self	
 	operator -- (int)
+		requires requires (Self& v) {--v;} 
 		{
 		auto old = self();
 		-- self ();
 		return old;
 		}
 
-	friend constexpr auto	
+	friend constexpr Self	
 	operator + (Self self, difference_type i)
+		requires requires (Self& v, difference_type i) {v += i;} 
 		{
 		self += i;
 		return self;
 		}
 
-	friend constexpr auto	
+	friend constexpr Self	
 	operator + (difference_type i, Self self)
+		requires requires (Self& v, difference_type i) {v += i;} 
 		{
 		self += i;
 		return self;
 		}
 
-	friend constexpr auto	
+	friend constexpr Self	
 	operator - (Self self, difference_type i)
+		requires requires (Self& v, difference_type i) {v -= i;} 
 		{
 		self -= i;
 		return self;
@@ -108,41 +132,28 @@ class random_access_iterator_interface
 
 	constexpr decltype(auto)
 	operator [] (difference_type i) const
+		requires requires (Self& v, difference_type i) {v += i;} 
 		{
 		auto other = self() + i;
 		return *other;
 		}
 
-        auto
-	operator == (const random_access_iterator_interface&) const
-		-> bool = default;
-
-        auto
-	operator <=> (const random_access_iterator_interface&) const
-		-> std::strong_ordering = default;
-
 	};
+
 
 
 template <class Self, class PointerType, class ConstIterator = Self>
 class pointer_wrapper_iterator_interface
-	:public random_access_iterator_interface 
+	:public iterator_interface 
 		<Self, iter_difference_t <PointerType>> 
 	{
 
-	using base = random_access_iterator_interface <Self>;
+	protected:
 
-	constexpr auto
-	self() -> Self&
-		{
-		return static_cast <Self&> (*this);
-		}
+	using base = iterator_interface <Self>;
 
-	constexpr auto
-	self() const -> const Self&
-		{
-		return static_cast <const Self&> (*this);
-		}
+	using base::self;
+
 
 	public:
 
@@ -226,17 +237,9 @@ class pointer_wrapper_iterator_interface
 		}
 
         constexpr auto
-	operator == (const pointer_wrapper_iterator_interface & other) const 
-		{
-		return value == other.value;
-		}
-
-        constexpr auto
 	operator <=> (const pointer_wrapper_iterator_interface & other) const
-		-> std::strong_ordering
-		{
-		return value <=> other.value;
-		}
+		-> std::strong_ordering 
+		= default;
 
 	};
 

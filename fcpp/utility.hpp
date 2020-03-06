@@ -18,13 +18,13 @@ namespace _impl
 
 	template <class T, ssize_t Ind, class E, class...Elems>
 	struct _type_list_get_index <T, Ind, E, Elems...>
-		_type_list_get_index <T, Ind+1, Elems...>
+		: _type_list_get_index <T, Ind+1, Elems...>
 		{};
 
 	template <class T, ssize_t Ind, class...Elems>
 	struct _type_list_get_index <T, Ind, T, Elems...>
 		{
-		static constexpr ssize_t value =   _type_list_get_index <T, 0, List <Elemens...>>::value == -1
+		static constexpr ssize_t value =   _type_list_get_index <T, 0, Elems...>::value == -1
 		                                 ? Ind
 						 : -1;
 		};
@@ -50,18 +50,18 @@ namespace _impl
 
 
 template <class...Args>
-struct type_list;
+struct type_list
 	{
 
 	template <class T>
-	using index_of = enable_if_t < type_list_get_index <T, Args...>::value > 0
-	                             , type_list_get_index <T, Args...>>;
+	using index_of = enable_if_t < _impl::type_list_get_index <T, Args...>::value != -1
+	                             , _impl::type_list_get_index <T, Args...>>;
 
 	static constexpr size_t size = sizeof...(Args);
 
 	template <size_t I>
 		requires (I < size)
-	using at = _get_at_ <I, Args...>;
+	using at = _impl::_get_at_ <I, Args...>;
 
 	};
 
@@ -109,9 +109,7 @@ struct self_interface
 		return static_cast <const Derived &&> (*this);
 		}
 
-	auto
-	operator == (const self_interface &) const
-		-> bool  = default;
+	public:
 
 	auto
 	operator <=> (const self_interface &) const
